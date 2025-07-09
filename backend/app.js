@@ -2,15 +2,28 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 
 
 
-require('dotenv').config();
+// require('dotenv').config();
+dotenv.config();
+// console.log('[' + process.env.DB_CONNECTION_STRING + ']');
+
+console.log("DB_CONNECTION_STRING =", process.env.DB_CONNECTION_STRING);
+
 
 const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+
+async function main(){
+    await mongoose.connect(process.env.DB_CONNECTION_STRING);
+    console.log("Connected to mongodb");
+}
+
+main().catch(console.error);
 
 app.use('/api/signup', require('./routes/signup'));
 app.use('/api/login', require('./routes/login'));

@@ -1,6 +1,6 @@
 import DefaultLayout from "../layout/DefaultLayout";
 import { useAuth } from "../auth/AuthProvider";
-import { Navigate, type ErrorResponse } from "react-router-dom";
+import { Navigate, useNavigate} from "react-router-dom";
 import "../App.css";
 import { useState } from "react";
 import { API_URL } from "../auth/constants";
@@ -11,8 +11,10 @@ export default function Signup() {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const auth = useAuth();
   const [errorResponse, setErrorResponse] = useState("");
+
+  const auth = useAuth();
+  const goTo = useNavigate();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -29,6 +31,8 @@ export default function Signup() {
       if (response.ok) {
         // const data = await response.json();
         console.log("Usuario creado");
+        setErrorResponse("");
+        goTo("/");
       } else {
         // const errorData = await response.json();
         console.error("Error del servidor:");
