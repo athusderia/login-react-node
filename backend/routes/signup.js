@@ -1,5 +1,6 @@
 const router = require("express").Router();
-const { jsonResponse } = require("../lib/jsonResponse")
+const { jsonResponse } = require("../lib/jsonResponse");
+const User = require("../schema/user");
 
 router.post("/", (req, res) => {
   const { name, username, password } = req.body;
@@ -10,6 +11,10 @@ router.post("/", (req, res) => {
       })
     );
   }
+
+  const user = new User({username, name, password});
+
+  user.save();
 
   // Respuesta única
   res.status(200).json(jsonResponse(200, { message: "User created successfully" }));

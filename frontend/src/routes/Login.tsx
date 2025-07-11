@@ -1,74 +1,75 @@
 import DefaultLayout from "../layout/DefaultLayout";
 import { useState } from "react";
-import "../App.css";
+import "./Login.css";
 import { useAuth } from "../auth/AuthProvider";
-import { Navigate, useNavigate  } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { API_URL } from "../auth/constants";
 import type { AuthResponseError } from "../types/types";
-
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorResponse, setErrorResponse] = useState("");
 
-
   const auth = useAuth();
   const goTo = useNavigate();
 
-   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-      e.preventDefault();
-  
-      try {
-        const response = await fetch(`${API_URL}/login`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username, password }),
-        });
-  
-        if (response.ok) {
-          // const data = await response.json();
-          console.log("Login correcto");
-          setErrorResponse("");
-          goTo("/dashboard");
-        } else {
-          // const errorData = await response.json();
-          console.error("Error del servidor:");
-          const json = (await response.json()) as AuthResponseError;
-          setErrorResponse(json.body.error);
-          return;
-        }
-      } catch (error) {
-        console.error("Error de red:", error);
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (response.ok) {
+        console.log("Login correcto");
+        setErrorResponse("");
+        goTo("/dashboard");
+      } else {
+        const json = (await response.json()) as AuthResponseError;
+        setErrorResponse(json.body.error);
+        return;
       }
+    } catch (error) {
+      console.error("Error de red:", error);
     }
+  }
 
   if (auth.isAuthenticated) {
-    return <Navigate to="/dashboard"></Navigate>;
+    return <Navigate to="/dashboard" />;
   }
 
   return (
     <DefaultLayout>
-      <form className="form" onSubmit={handleSubmit}>
-        <h1>Login</h1>
-        {!!errorResponse && <div className="errorMessage">{errorResponse}</div>}
-        <label htmlFor="">Username</label>
+      <form className="login-form" onSubmit={handleSubmit}>
+        <div className="login-form-logo"></div>
+        <h1 className="login-form-title">Login</h1>
+        {!!errorResponse && (
+          <div className="login-form-error">{errorResponse}</div>
+        )}
+
+        <label className="login-form-label">Username</label>
         <input
+          className="login-form-input"
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
 
-        <label htmlFor="">Password</label>
+        <label className="login-form-label">Password</label>
         <input
+          className="login-form-input"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button>Login</button>
+        <button className="login-form-button">Login</button>
       </form>
     </DefaultLayout>
   );

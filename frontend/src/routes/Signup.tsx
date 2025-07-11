@@ -1,7 +1,8 @@
 import DefaultLayout from "../layout/DefaultLayout";
 import { useAuth } from "../auth/AuthProvider";
-import { Navigate, useNavigate} from "react-router-dom";
-import "../App.css";
+import { Navigate, useNavigate } from "react-router-dom";
+import "./Login.css";
+
 import { useState } from "react";
 import { API_URL } from "../auth/constants";
 
@@ -29,13 +30,10 @@ export default function Signup() {
       });
 
       if (response.ok) {
-        // const data = await response.json();
         console.log("Usuario creado");
         setErrorResponse("");
         goTo("/");
       } else {
-        // const errorData = await response.json();
-        console.error("Error del servidor:");
         const json = (await response.json()) as AuthResponseError;
         setErrorResponse(json.body.error);
         return;
@@ -46,36 +44,43 @@ export default function Signup() {
   }
 
   if (auth.isAuthenticated) {
-    return <Navigate to="/dashboard"></Navigate>;
+    return <Navigate to="/dashboard" />;
   }
+
   return (
     <DefaultLayout>
-      <form className="form" onSubmit={handleSubmit}>
-        <h1>Signup</h1>
-        {!!errorResponse && <div className="errorMessage">{errorResponse}</div>}
+      <form className="login-form" onSubmit={handleSubmit}>
+        <div className="login-form-logo"></div>
+        <h1 className="login-form-title">Signup</h1>
+        {!!errorResponse && (
+          <div className="login-form-error">{errorResponse}</div>
+        )}
 
-        <label>Name</label>
+        <label className="login-form-label">Name</label>
         <input
+          className="login-form-input"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
 
-        <label>Username</label>
+        <label className="login-form-label">Username</label>
         <input
+          className="login-form-input"
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
 
-        <label>Password</label>
+        <label className="login-form-label">Password</label>
         <input
+          className="login-form-input"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button>Create User</button>
+        <button className="login-form-button">Create User</button>
       </form>
     </DefaultLayout>
   );

@@ -4,14 +4,7 @@ const app = express();
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
-
-
-// require('dotenv').config();
 dotenv.config();
-// console.log('[' + process.env.DB_CONNECTION_STRING + ']');
-
-console.log("DB_CONNECTION_STRING =", process.env.DB_CONNECTION_STRING);
-
 
 const port = process.env.PORT || 5000;
 
