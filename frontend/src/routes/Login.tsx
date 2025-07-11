@@ -4,7 +4,7 @@ import "./Login.css";
 import { useAuth } from "../auth/AuthProvider";
 import { Navigate, useNavigate } from "react-router-dom";
 import { API_URL } from "../auth/constants";
-import type { AuthResponseError } from "../types/types";
+import type { AuthResponse, AuthResponseError } from "../types/types";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -27,10 +27,20 @@ export default function Login() {
       });
 
       if (response.ok) {
-        console.log("Login correcto");
+        console.log("Login correcto - redirigiendo");
         setErrorResponse("");
-        goTo("/dashboard");
+        const json = (await response.json()) as AuthResponse;
+
+        console.log("Access Token:", json.body.accessToken);
+        console.log("Refresh Token:", json.body.refreshToken);
+        // if (json.body.accessToken && json.body.refreshToken) {
+        if (json.body.refreshToken) {
+          auth.saveUser(json);
+          <Navigate to="/dashboard" />;
+          console.log("Redirigiendo...");
+        }
       } else {
+        console.log("Someting went wrong");
         const json = (await response.json()) as AuthResponseError;
         setErrorResponse(json.body.error);
         return;

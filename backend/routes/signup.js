@@ -2,7 +2,7 @@ const router = require("express").Router();
 const { jsonResponse } = require("../lib/jsonResponse");
 const User = require("../schema/user");
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const { name, username, password } = req.body;
   if (!username || !name || !password) {
     return res.status(400).json(
@@ -12,11 +12,33 @@ router.post("/", (req, res) => {
     );
   }
 
-  const user = new User({username, name, password});
+  try {
+    const user = new User();
+    const exists = await user.usernameExist(username);
 
-  user.save();
+    if (exists) {
+      return res.status(400).json(
+        jsonResponse(400, {
+          error: "Username alredy exists",
+        })
+      );
+    }
 
-  // Respuesta única
-  res.status(200).json(jsonResponse(200, { message: "User created successfully" }));
+    const newUser = new User({ username, name, password });
+
+    newUser.save();
+
+    // Respuesta única
+    res
+      .status(200)
+      .json(jsonResponse(200, { message: "User created successfully" }));
+  } catch (error) {
+    res.status(500).json(
+      jsonResponse(500, {
+        error: "Error creating user",
+      })
+    );
+  }
 });
-module.exports =router;
+
+module.exports = router;
